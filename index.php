@@ -7,7 +7,8 @@ use Aries\Dbmodel\Models\User;
 // Usage example
 $user = new User();
 $users = $user->getUsers();
-echo '<pre>';
-print_r($users);
-echo '</pre>';
+
+echo "<pre>";
+print_r($users) ;
+echo "</pre>";
 ?>
