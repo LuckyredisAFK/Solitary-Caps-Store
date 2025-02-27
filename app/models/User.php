@@ -30,11 +30,12 @@ class User extends Database {
     }
 
     public function createUser($data) {
-        $sql = "INSERT INTO users (name, email, password) VALUES (:name, :email, password)";
+        $sql = "INSERT INTO users (name, email, password) VALUES (:name, :email, :password)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             'name' => $data['name'],
-            'email' => $data['email']
+            'email' => $data['email'],
+            'password' => $data['password']
         ]);
         return $this->db->lastInsertId();
     }
