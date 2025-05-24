@@ -312,19 +312,19 @@ if (isset($_SESSION['user_id'])) {
         <div class="products">
             <div class="product">
                 <img src="new-arrivals-images/1.png" alt="Classic Black Cap">
-                <h3>Classic Black Cap</h3>
-                <span class="price">₱999</span>
+                <h3>NewEra White NewYork Yankees Fitted</h3>
+                <span class="price">₱2899</span>
                 <a href="#" class="view-btn">View Details</a>
             </div>
             <div class="product">
                 <img src="new-arrivals-images/2.png" alt="Red Snapback">
-                <h3>Red Snapback</h3>
-                <span class="price">₱1099</span>
+                <h3>NewEra CherryRed NewYork Yankees Fitted</h3>
+                <span class="price">₱2599</span>
                 <a href="#" class="view-btn">View Details</a>
             </div>
             <div class="product">
                 <img src="new-arrivals-images/3.png" alt="Blue Fitted Cap">
-                <h3>Blue Fitted Cap</h3>
+                <h3>NewEra Black NewYork Yankees Fitted</h3>
                 <span class="price">₱1199</span>
                 <a href="#" class="view-btn">View Details</a>
             </div>
