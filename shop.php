@@ -79,6 +79,23 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     <title>Shop | Solitary Caps Store</title>
     <link rel="stylesheet" href="style.css">
     <style>
+    .nav-link-btn {
+    color: #fff;
+    background: none;
+    border: none;
+    font: inherit;
+    font-weight: bold;
+    letter-spacing: 1px;
+    cursor: pointer;
+    padding: 0 0.7em;
+    transition: color 0.2s;
+    text-decoration: none;
+    vertical-align: middle;
+    display: inline-block;
+}
+.nav-link-btn:hover {
+    color: #e53935;
+}
     .shop-products { display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center; margin: 2rem 0; }
     .shop-product { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; width: 260px; text-align: center; }
     .shop-product img { width: 100%; height: 180px; object-fit: contain; margin-bottom: 1rem; }
@@ -201,7 +218,18 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         <a href="index.php" class="brand" style="text-decoration: none;">Solitary</a>
         <div class="nav-links">
             <a href="shop.php">Shop</a>
-            <a href="#" id="cart-link">Cart (<?php echo $cartCount; ?>)</a>
+            <?php if (!isset($_SESSION['user_id'])): ?>
+                <a href="login.php">Login</a>
+            <?php endif; ?>
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <span class="nav-link-btn" style="cursor:default;"> <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?> </span>
+                <form method="post" style="display:inline;margin:0;padding:0;">
+                    <button type="submit" name="logout" class="nav-link-btn">Logout</button>
+                </form>
+                <a href="#" id="cart-link">Cart (<?php echo $cartCount; ?>)</a>
+            <?php else: ?>
+                <a href="register.php" id="cart-link">Cart (<?php echo $cartCount; ?>)</a>
+            <?php endif; ?>
         </div>
     </div>
     <!-- Cart Modal (copied and adapted from index.php) -->
@@ -403,6 +431,9 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                         <?php endforeach; ?>
                     </select>
                 </form>
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                    <a href="add-product.php" class="view-btn" style="margin-top:1.5rem;text-align:center;">+ Add Product</a>
+                <?php endif; ?>
             </aside>
             <div class="shop-products">
                 <?php if (empty($products)): ?>

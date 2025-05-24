@@ -62,18 +62,20 @@ if (isset($_POST['logout'])) {
 }
 
 if (isset($_SESSION['user_id'])) {
-    // Fetch username from DB if not already in session
-    if (empty($_SESSION['username'])) {
+    // Fetch username and role from DB if not already in session
+    if (empty($_SESSION['username']) || empty($_SESSION['role'])) {
         require_once __DIR__ . '/app/includes/database.php';
         $db = new \Aries\Dbmodel\Includes\Database();
         $pdo = $db->getConnection();
-        $stmt = $pdo->prepare('SELECT name FROM users WHERE id = ? LIMIT 1');
+        $stmt = $pdo->prepare('SELECT name, role FROM users WHERE id = ? LIMIT 1');
         $stmt->execute([$_SESSION['user_id']]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($row && isset($row['name'])) {
-            $_SESSION['username'] = $row['name'];
+        if ($row) {
+            $_SESSION['username'] = $row['name'] ?? 'User';
+            $_SESSION['role'] = $row['role'] ?? 'user';
         } else {
             $_SESSION['username'] = 'User';
+            $_SESSION['role'] = 'user';
         }
     }
 }
@@ -91,6 +93,9 @@ if (isset($_SESSION['user_id'])) {
         <a href="index.php" class="brand" style="text-decoration: none;">Solitary</a>
         <div class="nav-links">
             <a href="shop.php">Shop</a>
+            <?php if (!isset($_SESSION['user_id'])): ?>
+                <a href="login.php">Login</a>
+            <?php endif; ?>
             <?php if (isset($_SESSION['user_id'])): ?>
                 <span class="nav-link-btn" style="cursor:default;"> <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?> </span>
                 <form method="post" style="display:inline;margin:0;padding:0;">
@@ -228,7 +233,6 @@ if (isset($_SESSION['user_id'])) {
     }
     .nav-link-btn:hover {
         color: #e53935;
-        text-decoration: underline;
     }
     </style>
     <script>
