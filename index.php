@@ -4,35 +4,29 @@ require_once 'vendor/autoload.php';
 
 use Aries\Dbmodel\Models\User;
 
-// Usage example
 $user = new User();
 
-// Simple cart logic (session-based)
 session_start();
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
-// Generate a unique token for each add-to-cart form
 if (empty($_SESSION['cart_token'])) {
     $_SESSION['cart_token'] = bin2hex(random_bytes(16));
 }
 if (isset($_POST['add_to_cart'])) {
     $productId = $_POST['product_id'];
     $token = $_POST['cart_token'] ?? '';
-    // Only process if token is valid and not already used
     if (isset($_SESSION['cart_token']) && hash_equals($_SESSION['cart_token'], $token)) {
         if (!isset($_SESSION['cart'][$productId])) {
             $_SESSION['cart'][$productId] = 1;
         } else {
             $_SESSION['cart'][$productId]++;
         }
-        // Regenerate token after successful add to cart
         $_SESSION['cart_token'] = bin2hex(random_bytes(16));
         header('Location: index.php');
         exit;
     }
 }
-// Handle cart quantity changes and checkout
 if (isset($_POST['cart_add'])) {
     $pid = $_POST['cart_add'];
     if (isset($_SESSION['cart'][$pid])) {
@@ -62,7 +56,6 @@ if (isset($_POST['logout'])) {
 }
 
 if (isset($_SESSION['user_id'])) {
-    // Fetch username and role from DB if not already in session
     if (empty($_SESSION['username']) || empty($_SESSION['role'])) {
         require_once __DIR__ . '/app/includes/database.php';
         $db = new \Aries\Dbmodel\Includes\Database();
@@ -124,7 +117,6 @@ if (isset($_SESSION['user_id'])) {
         }
     });
     </script>
-    <!-- Cart Modal -->
     <div id="cart-modal" class="cart-modal">
         <div class="cart-modal-content">
             <span class="close" id="close-cart">&times;</span>
@@ -134,7 +126,6 @@ if (isset($_SESSION['user_id'])) {
                     <ul style="list-style:none;padding:0;">
                     <?php
                     $total = 0;
-                    // You need to fetch product details for real images and names
                     require_once __DIR__ . '/app/includes/database.php';
                     $db = new \Aries\Dbmodel\Includes\Database();
                     $pdo = $db->getConnection();
@@ -185,7 +176,6 @@ if (isset($_SESSION['user_id'])) {
         background: rgba(0,0,0,0.4);
         display: none;
         pointer-events: none;
-        /* Remove transition from here, not needed */
     }
     .cart-modal.open {
         display: block;
@@ -254,21 +244,17 @@ if (isset($_SESSION['user_id'])) {
                 }
             });
         }
-
-        // Prevent modal close when clicking inside the cart modal content
         if (cartModal) {
             document.querySelector('.cart-modal-content').addEventListener('click', function(e) {
                 e.stopPropagation();
             });
         }
-
-        // Prevent modal close when clicking inside the form
         var cartForm = document.getElementById('cart-update-form');
         if (cartForm) {
             cartForm.addEventListener('click', function(e) {
                 if (e.target.name === 'cart_add' || e.target.name === 'cart_minus') {
                     e.preventDefault();
-                    e.stopPropagation(); // Prevent modal from closing
+                    e.stopPropagation();
                     const formData = new FormData(cartForm);
                     formData.append(e.target.name, e.target.value);
                     fetch('index.php', {
@@ -277,7 +263,6 @@ if (isset($_SESSION['user_id'])) {
                     })
                     .then(res => res.text())
                     .then(html => {
-                        // Replace cart modal content only
                         const parser = new DOMParser();
                         const doc = parser.parseFromString(html, 'text/html');
                         const newCart = doc.querySelector('.cart-modal-content');
@@ -357,7 +342,6 @@ if (isset($_SESSION['user_id'])) {
         </div>
     </footer>
     <script>
-    // Sliding banner images
     const images = [
         'banner-images/3.jpg',
         'banner-images/4.jpg',

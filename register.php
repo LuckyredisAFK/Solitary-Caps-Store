@@ -1,5 +1,4 @@
 <?php
-// register.php
 session_start();
 $cartCount = isset($_SESSION['cart']) ? array_sum($_SESSION['cart']) : 0;
 
@@ -16,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($name && $email && $password) {
         $user = new User();
-        // Check if email already exists
         $existing = $user->getUsers();
         $emailExists = false;
         foreach ($existing as $u) {

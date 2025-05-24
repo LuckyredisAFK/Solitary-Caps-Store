@@ -174,16 +174,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="footer-social">
                 <a href="#" class="social-icon" aria-label="Facebook" title="Facebook">
-                    <!-- SVG omitted for brevity -->
                 </a>
                 <a href="#" class="social-icon" aria-label="Instagram" title="Instagram">
-                    <!-- SVG omitted for brevity -->
                 </a>
                 <a href="#" class="social-icon" aria-label="X" title="X (Twitter)">
-                    <!-- SVG omitted for brevity -->
                 </a>
                 <a href="#" class="social-icon" aria-label="TikTok" title="TikTok">
-                    <!-- SVG omitted for brevity -->
                 </a>
             </div>
             <div class="footer-copy">©2025, Solitary, Designed by Vienz Dinero</div>

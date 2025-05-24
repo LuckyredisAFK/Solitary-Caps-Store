@@ -1,14 +1,11 @@
 <?php
 session_start();
 
-// If ordering a single product directly from product.php
 if (isset($_GET['order_single'])) {
     $singleId = intval($_GET['order_single']);
     if ($singleId > 0) {
-        // Reset cart to only this product with qty 1
         $_SESSION['cart'] = [$singleId => 1];
     }
-    // Optionally redirect to clean URL
     header('Location: payment.php');
     exit;
 }
@@ -18,7 +15,6 @@ if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
     exit;
 }
 
-// Calculate total and fetch products before handling form submission
 require_once __DIR__ . '/app/includes/database.php';
 $db = new \Aries\Dbmodel\Includes\Database();
 $pdo = $db->getConnection();
@@ -40,7 +36,6 @@ if ($productIds) {
     }
 }
 
-// Handle form submission
 $errors = [];
 $success = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -57,7 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!in_array($payment_mode, ['COD', 'GCash', 'Credit Card'])) $errors[] = 'Select a valid payment mode.';
 
     if (!$errors) {
-        // Prepare order details as JSON
         $orderDetails = [];
         foreach ($_SESSION['cart'] as $productId => $qty) {
             $product = $productsMap[$productId] ?? null;

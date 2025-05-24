@@ -2,14 +2,12 @@
 session_start();
 require_once __DIR__ . '/app/includes/database.php';
 
-// Get product ID from query string
 $productId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 if (!$productId) {
     echo '<h2 style="text-align:center;margin-top:3rem;">Product not found.</h2>';
     exit;
 }
 
-// Fetch product from DB
 $db = new \Aries\Dbmodel\Includes\Database();
 $pdo = $db->getConnection();
 $stmt = $pdo->prepare('SELECT p.id, p.name, p.price, p.description, p.image, c.category_name FROM products p JOIN product_categories c ON p.category_id = c.id WHERE p.id = ? LIMIT 1');
@@ -21,12 +19,10 @@ if (!$product) {
     exit;
 }
 
-// Cart token for CSRF
 if (empty($_SESSION['cart_token'])) {
     $_SESSION['cart_token'] = bin2hex(random_bytes(16));
 }
 
-// Handle Add to Cart
 if (isset($_POST['add_to_cart'])) {
     $token = $_POST['cart_token'] ?? '';
     if (isset($_SESSION['cart_token']) && hash_equals($_SESSION['cart_token'], $token)) {
@@ -41,7 +37,6 @@ if (isset($_POST['add_to_cart'])) {
     }
 }
 
-// Cart count for navbar
 $cartCount = isset($_SESSION['cart']) ? array_sum($_SESSION['cart']) : 0;
 ?>
 <!DOCTYPE html>

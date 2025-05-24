@@ -1,30 +1,25 @@
 <?php
 session_start();
-// Simple cart logic (session-based)
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
-// Generate a unique token for each add-to-cart form
 if (empty($_SESSION['cart_token'])) {
     $_SESSION['cart_token'] = bin2hex(random_bytes(16));
 }
 if (isset($_POST['add_to_cart'])) {
     $productId = $_POST['product_id'];
     $token = $_POST['cart_token'] ?? '';
-    // Only process if token is valid and not already used
     if (isset($_SESSION['cart_token']) && hash_equals($_SESSION['cart_token'], $token)) {
         if (!isset($_SESSION['cart'][$productId])) {
             $_SESSION['cart'][$productId] = 1;
         } else {
             $_SESSION['cart'][$productId]++;
         }
-        // Regenerate token after successful add to cart
         $_SESSION['cart_token'] = bin2hex(random_bytes(16));
         header('Location: shop.php');
         exit;
     }
 }
-// Handle cart quantity changes and checkout
 if (isset($_POST['cart_add'])) {
     $pid = $_POST['cart_add'];
     if (isset($_SESSION['cart'][$pid])) {
@@ -46,15 +41,12 @@ if (isset($_POST['checkout'])) {
     exit;
 }
 $cartCount = array_sum($_SESSION['cart']);
-// Sample products with categories
 $products = [
-    // Empty for now, will be filled from add-product.php in the future
 ];
 $categories = ['59fifty', '9seventy', '9fifty', '9twenty'];
 $selectedCategory = isset($_GET['category']) ? $_GET['category'] : '';
 
 require_once __DIR__ . '/app/includes/database.php';
-// Fetch products from DB
 $db = new \Aries\Dbmodel\Includes\Database();
 $pdo = $db->getConnection();
 $sql = "SELECT p.id, p.name, p.price, p.description, p.image, c.category_name FROM products p JOIN product_categories c ON p.category_id = c.id ORDER BY p.created_at DESC";
@@ -232,7 +224,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             <?php endif; ?>
         </div>
     </div>
-    <!-- Cart Modal (copied and adapted from index.php) -->
     <div id="cart-modal" class="cart-modal">
         <div class="cart-modal-content">
             <span class="close" id="close-cart">&times;</span>
@@ -242,7 +233,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     <ul style="list-style:none;padding:0;">
                     <?php
                     $total = 0;
-                    // Fetch product details for real images and names
                     require_once __DIR__ . '/app/includes/database.php';
                     $db = new \Aries\Dbmodel\Includes\Database();
                     $pdo = $db->getConnection();
@@ -334,19 +324,17 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 }
             });
         }
-        // Prevent modal close when clicking inside the cart modal content
         if (cartModal) {
             document.querySelector('.cart-modal-content').addEventListener('click', function(e) {
                 e.stopPropagation();
             });
         }
-        // Prevent modal close when clicking inside the form
         var cartForm = document.getElementById('cart-update-form');
         if (cartForm) {
             cartForm.addEventListener('click', function(e) {
                 if (e.target.name === 'cart_add' || e.target.name === 'cart_minus') {
                     e.preventDefault();
-                    e.stopPropagation(); // Prevent modal from closing
+                    e.stopPropagation();
                     const formData = new FormData(cartForm);
                     formData.append(e.target.name, e.target.value);
                     fetch('shop.php', {
@@ -355,46 +343,41 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     })
                     .then(res => res.text())
                     .then(html => {
-                        // Replace cart modal content only
                         const parser = new DOMParser();
                         const doc = parser.parseFromString(html, 'text/html');
                         const newCart = doc.querySelector('.cart-modal-content');
                         if (newCart) {
                             document.querySelector('.cart-modal-content').innerHTML = newCart.innerHTML;
-                            attachCartModalClose(); // Re-attach close event
+                            attachCartModalClose();
                         }
                     });
                 }
             });
         }
 
-        // AJAX for Add to Cart
         document.querySelectorAll('.add-to-cart-form').forEach(function(form) {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
-                e.stopPropagation(); // Prevent parent div onclick
+                e.stopPropagation();
                 const formData = new FormData(form);
-                formData.append('add_to_cart', '1'); // Ensure PHP handler is triggered
+                formData.append('add_to_cart', '1');
                 fetch('shop.php', {
                     method: 'POST',
                     body: formData
                 })
                 .then(res => res.text())
                 .then(html => {
-                    // Update cart count in navbar
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(html, 'text/html');
                     const newCartLink = doc.getElementById('cart-link');
                     if (newCartLink) {
                         document.getElementById('cart-link').innerHTML = newCartLink.innerHTML;
                     }
-                    // Update cart modal content as well
                     const newCartModalContent = doc.querySelector('.cart-modal-content');
                     if (newCartModalContent) {
                         document.querySelector('.cart-modal-content').innerHTML = newCartModalContent.innerHTML;
-                        attachCartModalClose(); // Re-attach close event
+                        attachCartModalClose();
                     }
-                    // Update all cart_token fields in add-to-cart forms
                     const newTokenInput = doc.querySelector('.add-to-cart-form input[name="cart_token"]');
                     if (newTokenInput) {
                         const newToken = newTokenInput.value;
@@ -402,7 +385,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                             input.value = newToken;
                         });
                     }
-                    // Optionally, show a quick feedback (e.g., flash message or animation)
                 });
             });
         });
